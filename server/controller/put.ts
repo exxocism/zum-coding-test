@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import { sanitize, MAGICNUM, cache } from './util';
+import { typeModifyArticle } from '../Types';
 import db from '../db';
 
 const modifyArticle = (req: Request, res: Response) => {
@@ -10,9 +11,12 @@ const modifyArticle = (req: Request, res: Response) => {
   }
 
   //sanitize input
-  const articletext = sanitize(req.body['articletext']);
-  const articlename = sanitize(req.body['articlename']);
-  const id: number = Number(sanitize(req.params.id));
+  const modifyInfo: typeModifyArticle = {
+    articleid: Number(sanitize(req.params.id)),
+    articletext: sanitize(req.body['articletext']),
+    articlename: sanitize(req.body['articlename']),
+  };
+  const { articleid: id, articletext, articlename } = modifyInfo;
 
   //validity check
   if (isNaN(id) || id < 0 || id > Number.MAX_SAFE_INTEGER) {

@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import { sanitize, MAGICNUM, cache } from './util';
+import { typeListArticle, returnListArticle } from '../Types';
 import db from '../db';
 
 const list = (req: Request, res: Response) => {
@@ -23,74 +24,85 @@ const list = (req: Request, res: Response) => {
     return;
   }
 
+  const listInfo: typeListArticle = {
+    username: '',
+    articlename: '',
+    articletext: '',
+    articlePerPage: 0,
+    currentPage: 0,
+    orderby: 'DESC',
+  };
+
   //multiple query : validiity check
-  let username = '';
   if (req.query['username']) {
-    username = sanitize(req.query['username']);
-    if (username.length > MAGICNUM.MAX_USERNAME_LENGTH) {
+    listInfo.username = sanitize(req.query['username']);
+    if (listInfo.username.length > MAGICNUM.MAX_USERNAME_LENGTH) {
       console.log('400 Bad Request - username too long');
       return res.status(400).json({ code: 0, message: 'Username is too long' });
     }
   }
 
-  let articlename = '';
   if (req.query['articlename']) {
-    articlename = sanitize(req.query['articlename']);
-    if (articlename.length > MAGICNUM.MAX_ARTICLENAME_LENGTH) {
+    listInfo.articlename = sanitize(req.query['articlename']);
+    if (listInfo.articlename.length > MAGICNUM.MAX_ARTICLENAME_LENGTH) {
       console.log('400 Bad Request - articlename too long');
       return res.status(400).json({ code: 1, message: 'Articlename is too long' });
     }
   }
 
-  let articletext = '';
   if (req.query['articletext']) {
-    articletext = sanitize(req.query['articletext']);
-    if (articletext.length > MAGICNUM.MAX_ARTICLETEXT_QUERY_LENGTH) {
+    listInfo.articletext = sanitize(req.query['articletext']);
+    if (listInfo.articletext.length > MAGICNUM.MAX_ARTICLETEXT_QUERY_LENGTH) {
       console.log('400 Bad Request - articletext too long');
       return res.status(400).json({ code: 2, message: 'Articletext is too long' });
     }
   }
 
-  let orderby = 'DESC';
   if (req.query['orderby']) {
-    orderby = sanitize(req.query['orderby']);
-    if (orderby !== 'ASC' && orderby !== 'DESC') {
+    listInfo.orderby = sanitize(req.query['orderby']);
+    if (listInfo.orderby !== 'ASC' && listInfo.orderby !== 'DESC') {
       console.log('400 Bad Request - orderby must be ASC or DESC');
       return res.status(400).json({ code: 2, message: 'Orderby must be ASC or DESC' });
     }
   }
 
-  let limit = 0;
   if (req.query['articlePerPage']) {
-    limit = Number(sanitize(req.query['articlePerPage']));
-    if (isNaN(limit) || limit <= 0 || limit > MAGICNUM.MAX_SAFE_QUERY_LENGTH) {
+    listInfo.articlePerPage = Number(sanitize(req.query['articlePerPage']));
+    if (
+      isNaN(listInfo.articlePerPage) ||
+      listInfo.articlePerPage <= 0 ||
+      listInfo.articlePerPage > MAGICNUM.MAX_SAFE_QUERY_LENGTH
+    ) {
       console.log('400 Bad Request - limit must be a positive integer');
       return res.status(400).json({ code: 3, message: 'Limit must be a positive integer' });
     }
   }
 
-  let offset = 0;
   if (req.query['currentPage']) {
-    offset = Number(sanitize(req.query['currentPage']));
-    if (isNaN(offset) || offset <= 0 || offset > MAGICNUM.MAX_SAFE_QUERY_LENGTH) {
+    listInfo.currentPage = Number(sanitize(req.query['currentPage']));
+    if (
+      isNaN(listInfo.currentPage) ||
+      listInfo.currentPage <= 0 ||
+      listInfo.currentPage > MAGICNUM.MAX_SAFE_QUERY_LENGTH
+    ) {
       console.log('400 Bad Request - offset must be a positive integer');
       return res.status(400).json({ code: 4, message: 'Offset must be a positive integer' });
     }
-    offset -= 1;
+    listInfo.currentPage -= 1;
   }
 
   //create SQL Clause corresponding to query
   const whereArr: string[] = [];
-  if (username) whereArr.push(`username = '${username}'`);
-  if (articlename) whereArr.push(`articlename LIKE '%${articlename}%'`);
-  if (articletext) whereArr.push(`articletext LIKE '%${articletext}%'`);
+  if (listInfo.username) whereArr.push(`username = '${listInfo.username}'`);
+  if (listInfo.articlename) whereArr.push(`articlename LIKE '%${listInfo.articlename}%'`);
+  if (listInfo.articletext) whereArr.push(`articletext LIKE '%${listInfo.articletext}%'`);
   const whereClause: string = whereArr.length ? ` WHERE ${whereArr.join(' AND ')}` : '';
-  const orderbyClause: string = orderby ? ` ORDER BY created_at ${orderby}` : ``;
+  const orderbyClause: string = listInfo.orderby ? ` ORDER BY created_at ${listInfo.orderby}` : ``;
   let limitClause: string = '';
-  if (limit) {
-    limitClause = ` LIMIT ${limit}`;
-    if (offset) {
-      limitClause += ` OFFSET ${limit * offset}`;
+  if (listInfo.articlePerPage) {
+    limitClause = ` LIMIT ${listInfo.articlePerPage}`;
+    if (listInfo.currentPage) {
+      limitClause += ` OFFSET ${listInfo.articlePerPage * listInfo.currentPage}`;
     }
   }
   const query: string = `SELECT * from Article${whereClause}${orderbyClause}${limitClause};`;
@@ -102,8 +114,9 @@ const list = (req: Request, res: Response) => {
       console.log(err);
       return res.status(500).json({ code: 5, message: 'Internal Server Error' });
     }
-    cache.set(req.url, rows);
-    return res.status(200).json(rows);
+    const response: returnListArticle = { result: rows };
+    cache.set(req.url, response);
+    return res.status(200).json(response);
   });
 };
 

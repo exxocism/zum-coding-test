@@ -1,10 +1,12 @@
 import { Request, Response } from 'express';
-import db from '../db';
 import { sanitize, cache } from './util';
+import { typeDeleteArticle } from '../Types';
+import db from '../db';
 
 const deleteArticle = (req: Request, res: Response) => {
   //sanitize input
-  const id: number = Number(sanitize(req.params.id));
+  const articleInfo: typeDeleteArticle = { articleid: Number(sanitize(req.params.id)) };
+  const { articleid: id } = articleInfo;
 
   //validity check
   if (isNaN(id) || id < 0 || id > Number.MAX_SAFE_INTEGER) {

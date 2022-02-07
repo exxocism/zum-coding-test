@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
-import db from '../db';
 import { sanitize, MAGICNUM, cache } from './util';
+import { typeNewArticle } from '../Types';
+import db from '../db';
 
 const newArticle = (req: Request, res: Response) => {
   // validity check #1 : missing values
@@ -15,9 +16,12 @@ const newArticle = (req: Request, res: Response) => {
   }
 
   // sanitize input
-  const username = sanitize(req.body['username']);
-  const articletext = sanitize(req.body['articletext']);
-  const articlename = sanitize(req.body['articlename']);
+  const newInfo: typeNewArticle = {
+    username: sanitize(req.body['username']),
+    articletext: sanitize(req.body['articletext']),
+    articlename: sanitize(req.body['articlename']),
+  };
+  const { username, articletext, articlename } = newInfo;
 
   // validity check #2 : invalid input
   if (username.length > MAGICNUM.MAX_USERNAME_LENGTH) {
