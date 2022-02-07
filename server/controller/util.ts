@@ -1,5 +1,6 @@
 export const sanitize = (input: any): string => {
-  return input;
+  const result: string = input.replace(/[\/\'<>\`\"\;\\]/g, '');
+  return result;
 };
 
 export const MAGICNUM = {
