@@ -12,7 +12,7 @@ const modifyArticle = (req: Request, res: Response) => {
   //sanitize input
   const articletext = sanitize(req.body['articletext']);
   const articlename = sanitize(req.body['articlename']);
-  const id: number = parseInt(req.params.id);
+  const id: number = Number(sanitize(req.params.id));
 
   //validity check
   if (isNaN(id) || id < 0 || id > Number.MAX_SAFE_INTEGER) {

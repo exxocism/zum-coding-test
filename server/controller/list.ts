@@ -62,7 +62,7 @@ const list = (req: Request, res: Response) => {
 
   let limit = 0;
   if (req.query['articlePerPage']) {
-    limit = parseInt(sanitize(req.query['articlePerPage']));
+    limit = Number(sanitize(req.query['articlePerPage']));
     if (isNaN(limit) || limit <= 0 || limit > MAGICNUM.MAX_SAFE_QUERY_LENGTH) {
       console.log('400 Bad Request - limit must be a positive integer');
       return res.status(400).json({ code: 3, message: 'Limit must be a positive integer' });
@@ -71,7 +71,7 @@ const list = (req: Request, res: Response) => {
 
   let offset = 0;
   if (req.query['currentPage']) {
-    offset = parseInt(sanitize(req.query['currentPage']));
+    offset = Number(sanitize(req.query['currentPage']));
     if (isNaN(offset) || offset <= 0 || offset > MAGICNUM.MAX_SAFE_QUERY_LENGTH) {
       console.log('400 Bad Request - offset must be a positive integer');
       return res.status(400).json({ code: 4, message: 'Offset must be a positive integer' });
