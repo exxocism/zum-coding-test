@@ -48,6 +48,29 @@ const ReactComponent: string = (function () {
           .board__bold {
             font-weight: bold;
           }
+
+          .single__article {
+            display: grid;
+            grid-template-columns: 1fr 8fr 2fr 2fr;
+            font-size: 2.5rem;
+            cursor: pointer;
+          }
+
+          .single__right {
+            justify-self: right;
+          }
+
+          .single__link {
+            cursor: pointer;
+            font-size: inherit;
+          }
+
+          .board__noarticle {
+            margin-top: 3rem;
+            position: relative;
+            text-align: center;
+            font-size: 3rem;
+          }
         </style>
         <div class="board">  
           <div class="single__article">
@@ -61,6 +84,7 @@ const ReactComponent: string = (function () {
               return `<${SingleList} articleid="${articleid}" username="${username}" articlename="${articlename}" created-at="${created_at}"></${SingleList}>`;
             })
             .join('')}
+          ${!data.result?.length ? `<div class="board__noarticle">게시글이 없습니다.</div>` : ''}
         </div>
       `;
       document.querySelector('.board').addEventListener('click', (event: any) => {

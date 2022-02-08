@@ -89,19 +89,19 @@ const ReactComponent: string = (function () {
           <select id="pagination" class="control__dropdown">
             <option value=''>갯수 필터</option>
             <option value="5" ${
-              searchParams.get('articlePerPage') === '5' && 'selected'
+              searchParams.get('articlePerPage') === '5' ? 'selected' : ''
             }>5개 보기</option>
             <option value="10" ${
-              searchParams.get('articlePerPage') === '10' && 'selected'
+              searchParams.get('articlePerPage') === '10' ? 'selected' : ''
             }>10개 보기</option>
             <option value="30"${
-              searchParams.get('articlePerPage') === '30' && 'selected'
+              searchParams.get('articlePerPage') === '30' ? 'selected' : ''
             }>30개 보기</option>
             <option value="50"${
-              searchParams.get('articlePerPage') === '50' && 'selected'
+              searchParams.get('articlePerPage') === '50' ? 'selected' : ''
             }>50개 보기</option>
             <option value="100"${
-              searchParams.get('articlePerPage') === '100' && 'selected'
+              searchParams.get('articlePerPage') === '100' ? 'selected' : ''
             }>100개 보기</option>
           </select>
           <select id="orderby" class="control__dropdown noleft">
@@ -149,6 +149,34 @@ const ReactComponent: string = (function () {
         const val = (event.target as HTMLSelectElement)?.value;
         if (!val) searchParams.delete('orderby');
         else searchParams.set('orderby', val);
+        sessionStorage.removeItem('cache_list');
+        const endpoint = `${window.location.origin}${
+          window.location.pathname
+        }?${searchParams.toString()}`;
+        window.history.pushState({}, '', endpoint);
+        reRender();
+        return;
+      });
+
+      document.querySelector('.control__searchbutton').addEventListener('click', (event: Event) => {
+        const val = ((event.target as HTMLButtonElement).previousElementSibling as HTMLInputElement)
+          ?.value;
+        if (!val) searchParams.delete('articlename');
+        else searchParams.set('articlename', val);
+        sessionStorage.removeItem('cache_list');
+        const endpoint = `${window.location.origin}${
+          window.location.pathname
+        }?${searchParams.toString()}`;
+        window.history.pushState({}, '', endpoint);
+        reRender();
+        return;
+      });
+
+      document.querySelector('.control__searchbar').addEventListener('keyup', (event: Event) => {
+        if ((event as KeyboardEvent)?.key !== 'Enter') return;
+        const val = (event.target as HTMLInputElement)?.value;
+        if (!val) searchParams.delete('articlename');
+        else searchParams.set('articlename', val);
         sessionStorage.removeItem('cache_list');
         const endpoint = `${window.location.origin}${
           window.location.pathname
