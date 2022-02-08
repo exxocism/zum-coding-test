@@ -12,7 +12,7 @@ const list = (req: Request, res: Response) => {
 
   if (!Object.keys(req.query).length) {
     //simple query : skipping pagination
-    db.all(`SELECT * from Article;`, (err: Error, rows: any) => {
+    db.all(`SELECT * from Article ORDER BY created_at DESC;`, (err: Error, rows: any) => {
       if (err) {
         console.dir(err);
         console.log('500 Internal Server Error - failed to get articles');

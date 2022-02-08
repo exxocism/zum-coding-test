@@ -15,8 +15,9 @@ const ReactComponent: string = (function () {
 
       async function fetchArticles() {
         let data, result: returnListArticle;
+        const searchParams = new URLSearchParams(window.location.search);
         try {
-          data = await fetch(`http://${endpoint}:3333/article`);
+          data = await fetch(`http://${endpoint}:3333/article?${searchParams.toString()}`);
           result = await data.json();
         } catch (error) {
           alert(error);
@@ -30,15 +31,6 @@ const ReactComponent: string = (function () {
       else {
         console.log('cache hit');
         this.render(JSON.parse(sessionStorage.getItem('cache_list')));
-        document.querySelector('.board').addEventListener('click', (event: any) => {
-          if (event.target.className === 'single__link') {
-            const articleid: string = event.target.parentElement.previousElementSibling.textContent;
-            const endpoint = `${window.location.origin}${window.location.pathname}?articleid=${articleid}`;
-            window.history.pushState({}, '', endpoint);
-            reRender();
-            return;
-          }
-        });
       }
     }
 
@@ -71,6 +63,15 @@ const ReactComponent: string = (function () {
             .join('')}
         </div>
       `;
+      document.querySelector('.board').addEventListener('click', (event: any) => {
+        if (event.target.className === 'single__link') {
+          const articleid: string = event.target.parentElement.previousElementSibling.textContent;
+          const endpoint = `${window.location.origin}${window.location.pathname}?articleid=${articleid}`;
+          window.history.pushState({}, '', endpoint);
+          reRender();
+          return;
+        }
+      });
     }
   }
 

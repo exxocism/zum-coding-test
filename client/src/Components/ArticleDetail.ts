@@ -1,4 +1,5 @@
-import { returnListArticle, typeArticleDB } from '@backend/Types';
+import { returnListArticle, typeArticleDB, typeModifyArticle } from '@backend/Types';
+import { reRender } from '..';
 
 const ReactComponent: string = (function () {
   class ArticleDetail extends HTMLElement {
@@ -6,6 +7,7 @@ const ReactComponent: string = (function () {
       super();
       this.render = this.render.bind(this);
       this.addEvent = this.addEvent.bind(this);
+      //this.connectedCallback = this.connectedCallback.bind(this);
     }
 
     connectedCallback() {
@@ -48,21 +50,110 @@ const ReactComponent: string = (function () {
 
     addEvent() {
       document.querySelector('.article__metadata').addEventListener('click', (event: any) => {
+        const searchParams = new URLSearchParams(window.location.search);
+        let endpoint;
         switch (event.target?.id) {
+          // 수정
           case 'article-btn-modify':
-            console.log('수정');
+            const editMode = searchParams.get('editmode');
+            if (editMode === '1') {
+              searchParams.delete('editmode');
+
+              const payload: typeModifyArticle = {
+                articleid: Number(searchParams.get('articleid')),
+                articlename: (document.querySelector('#article-title-input') as HTMLInputElement)
+                  ?.value,
+                articletext: (document.querySelector('#article-textarea') as HTMLTextAreaElement)
+                  ?.value,
+              };
+              const { articleid, articlename, articletext } = payload;
+
+              if (!articleid || !articlename || !articletext) {
+                alert('값을 모두 입력해주세요.');
+                return;
+              }
+              if (isNaN(articleid) || articleid < 0 || articleid > Number.MAX_SAFE_INTEGER) {
+                alert('글번호는 정수만 입력해주세요.');
+                return;
+              }
+              if (articlename.length > 128) {
+                alert('제목은 128자 이내로 입력해주세요.');
+                return;
+              }
+              if (articletext.length > 1048576) {
+                alert('내용이 너무 깁니다.');
+                return;
+              }
+
+              fetch(`http://${window.location.hostname}:3333/article/${articleid}`, {
+                method: 'PUT',
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(payload),
+              })
+                .then((res) => {
+                  if (res.status !== 204) {
+                    alert(`수정에 실패했습니다. 오류 코드 : ${res.status}`);
+                    return;
+                  }
+                  sessionStorage.removeItem('cache_list');
+                  endpoint = `${window.location.origin}${
+                    window.location.pathname
+                  }?${searchParams.toString()}`;
+                  window.history.pushState({}, '', endpoint);
+                  this.connectedCallback();
+                  return;
+                })
+                .catch((err) => {
+                  alert(err);
+                  return;
+                });
+            } else {
+              searchParams.set('editmode', '1');
+              endpoint = `${window.location.origin}${
+                window.location.pathname
+              }?${searchParams.toString()}`;
+              window.history.pushState({}, '', endpoint);
+              this.connectedCallback();
+            }
             break;
+
+          // 삭제
           case 'article-btn-delete':
-            console.log('삭제');
+            const articleid = searchParams.get('articleid');
+            fetch(`http://${window.location.hostname}:3333/article/${articleid}`, {
+              method: 'DELETE',
+            })
+              .then((res) => {
+                if (res.status !== 204) {
+                  alert(`삭제에 실패했습니다. 오류 코드 : ${res.status}`);
+                  return;
+                }
+                sessionStorage.removeItem('cache_list');
+                endpoint = `${window.location.origin}${window.location.pathname}`;
+                window.history.pushState({}, '', endpoint);
+                reRender();
+                return;
+              })
+              .catch((err) => {
+                alert(err);
+                return;
+              });
             break;
+          // 목록
           case 'article-btn-list':
-            console.log('목록');
+            endpoint = `${window.location.origin}${window.location.pathname}`;
+            window.history.pushState({}, '', endpoint);
+            reRender();
             break;
         }
       });
     }
 
     render({ articleid, username, articlename, articletext, created_at }: typeArticleDB) {
+      const searchParams = new URLSearchParams(window.location.search);
+      const editMode = searchParams.get('editmode') === '1';
       this.innerHTML = `
         <style>
           .article__detail {
@@ -106,20 +197,46 @@ const ReactComponent: string = (function () {
           .article__searchbutton:active {
             background-color: lightgray;
           }
+
+          #article-textarea {
+            width: 100%;
+            min-height: 20rem;
+            height: auto;
+            resize: vertical;
+            padding: 1rem;
+          }
+
+          #article-title-input {
+            width: 100%;
+            font-size: 3rem;
+            font-weight: bold;
+            margin-bottom: 2rem;
+            padding-left: 1rem;
+          }
         </style>
         <div class="article__detail">
           <!-- 여기서부터 조건부 렌더링 -->
-          <h1 class="article__detail__title">${articlename}</h1>
+          ${
+            editMode
+              ? `<input id="article-title-input" type="text" value="${articlename}">`
+              : `<h1 class="article__detail__title">${articlename}</h1>`
+          }
           <div class="article__metadata">
             <div>글번호: ${articleid}</div>
             <div>작성자: ${username}</div>
             <div>작성일: ${new Date(created_at).toLocaleDateString()}</div>
             <div></div>
-            <button id="article-btn-modify" class=article__searchbutton>수정</button>
+            <button id="article-btn-modify" class=article__searchbutton>${
+              editMode ? '완료' : '수정'
+            }</button>
             <button id="article-btn-delete" class=article__searchbutton>삭제</button>
             <button id="article-btn-list" class=article__searchbutton>목록</button>
           </div>
-          <div class="article__detail__text">${articletext}</div>
+          ${
+            editMode
+              ? `<textarea class="article__detail__text" id="article-textarea">${articletext}</textarea>`
+              : `<div class="article__detail__text">${articletext}</div>`
+          }
         </div>
       `;
     }

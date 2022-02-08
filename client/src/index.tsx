@@ -23,6 +23,8 @@ export const reRender = () => {
       const searchParams = new URLSearchParams(window.location.search);
       if (searchParams.get('articleid'))
         renderThisPage = VirtualDOM.get(getHash(GetArticleRendered));
+      else renderThisPage = VirtualDOM.get(getHash(MainPageRendered));
+      break;
   }
 
   if (!renderThisPage) return;
