@@ -88,10 +88,25 @@ const ReactComponent: string = (function () {
         </div>
       `;
       document.querySelector('.board').addEventListener('click', (event: any) => {
+        let endpoint;
+        const searchParams = new URLSearchParams(window.location.search);
         if (event.target.className === 'single__link') {
           const articleid: string = event.target.parentElement.previousElementSibling.textContent;
-          const endpoint = `${window.location.origin}${window.location.pathname}?articleid=${articleid}`;
+          endpoint = `${window.location.origin}${window.location.pathname}?articleid=${articleid}`;
           window.history.pushState({}, '', endpoint);
+          reRender();
+          return;
+        }
+
+        const classes = [...event.target.classList];
+        const idx = classes.findIndex((className: string) => className === 'single__username');
+        if (idx !== -1) {
+          searchParams.set('username', event.target.textContent);
+          endpoint = `${window.location.origin}${
+            window.location.pathname
+          }?${searchParams.toString()}`;
+          window.history.pushState({}, '', endpoint);
+          sessionStorage.removeItem('cache_list');
           reRender();
           return;
         }

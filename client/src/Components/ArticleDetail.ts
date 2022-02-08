@@ -7,12 +7,14 @@ const ReactComponent: string = (function () {
       super();
       this.render = this.render.bind(this);
       this.addEvent = this.addEvent.bind(this);
+      this.notfound = this.notfound.bind(this);
       //this.connectedCallback = this.connectedCallback.bind(this);
     }
 
     connectedCallback() {
       const addevent = this.addEvent;
       const render = this.render;
+      const notfound = this.notfound;
       const searchParams = new URLSearchParams(window.location.search);
       const articleid = searchParams.get('articleid');
 
@@ -25,6 +27,11 @@ const ReactComponent: string = (function () {
         } catch (error) {
           alert(error);
           console.error(error);
+          return;
+        }
+
+        if (data.status === 404) {
+          notfound();
           return;
         }
 
@@ -149,6 +156,23 @@ const ReactComponent: string = (function () {
             break;
         }
       });
+    }
+
+    notfound() {
+      this.innerHTML = `
+        <style>
+          .article__notfound {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 5rem;
+            font-size: 4rem;
+            text-align: center;
+          }
+        </style>
+        <div class="article__notfound">404 Not Found</div>
+        <div class="article__notfound">요청하신 게시물을 찾을 수 없습니다.</div>
+      `;
     }
 
     render({ articleid, username, articlename, articletext, created_at }: typeArticleDB) {

@@ -41,7 +41,7 @@ const ReactComponent: string = (function () {
           <div>
             <span class="single__link">${this.getAttribute('articlename')}</span>
           </div>
-          <div class=single__right>${this.getAttribute('username')}</div>
+          <div class="single__right single__username">${this.getAttribute('username')}</div>
           <div class=single__right>${new Date(
             this.getAttribute('created-at')
           ).toLocaleDateString()}</div>
