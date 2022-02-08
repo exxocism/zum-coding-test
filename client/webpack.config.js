@@ -50,4 +50,12 @@ module.exports = {
     }),
   ],
   mode: 'production',
+  devServer: {
+    static: {
+      directory: path.join(__dirname, 'build'),
+    },
+    hot: true,
+    host: 'localhost',
+    port: 3300,
+  },
 };
