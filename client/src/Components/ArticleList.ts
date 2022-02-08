@@ -1,3 +1,6 @@
+import { returnListArticle, typeArticleDB } from '@backend/Types';
+import SingleList from './SingleList';
+
 const ReactComponent: string = (function () {
   class ArticleList extends HTMLElement {
     constructor() {
@@ -7,39 +10,55 @@ const ReactComponent: string = (function () {
 
     connectedCallback() {
       const endpoint = window.location.hostname;
+      const render = this.render;
 
       async function fetchArticles() {
-        let data;
+        let data, result: returnListArticle;
         try {
           data = await fetch(`http://${endpoint}:3333/article`);
-          data = await data.json();
+          result = await data.json();
         } catch (error) {
           alert(error);
           console.error(error);
           return;
         }
-        console.dir(data);
-        //this.render(data.result);
+        sessionStorage.setItem('cache_list', JSON.stringify(result));
+        render(result);
       }
-      fetchArticles();
+      if (!sessionStorage.getItem('cache_list')) fetchArticles();
+      else {
+        console.log('cache hit');
+        this.render(JSON.parse(sessionStorage.getItem('cache_list')));
+      }
     }
 
-    render(data: object[]) {
+    render(data: returnListArticle) {
       this.innerHTML = `
         <style>
           .board {
-            height: 6rem;
-            background-color: darkslateblue;
-            display: flex;
-            align-items: center;
-            padding-left : 2rem;
-            font-size: 2rem;
+            padding: 3rem;
+            margin-top: 1rem;
+            display: grid;
+            grid-template-rows: auto;
+            grid-gap: 1.2rem;
+          }
+
+          .board__bold {
             font-weight: bold;
-            color: white;
           }
         </style>
-        <div class="board">
-          yes
+        <div class="board">  
+          <div class="single__article">
+            <div class=board__bold>ID</div>
+            <div class=board__bold>Title</div>
+            <div class="board__bold single__right">Author</div>
+            <div class="board__bold single__right">Date</div>
+          </div>
+          ${data.result
+            .map(({ articleid, username, articlename, created_at }: typeArticleDB) => {
+              return `<${SingleList} articleid="${articleid}" username="${username}" articlename="${articlename}" created-at="${created_at}"></${SingleList}>`;
+            })
+            .join('')}
         </div>
       `;
     }
