@@ -29,6 +29,17 @@ const ReactComponent: string = (function () {
       else {
         console.log('cache hit');
         this.render(JSON.parse(sessionStorage.getItem('cache_list')));
+        document.querySelector('.board').addEventListener('click', (event: any) => {
+          if (event.target.className === 'single__link') {
+            const articleid: string = event.target.parentElement.previousElementSibling.textContent;
+            console.dir(articleid);
+            return;
+            const endpoint = window.location.host;
+            const url = `http://${endpoint}:3333/article/${articleid}`;
+            window.location.href = url;
+            return;
+          }
+        });
       }
     }
 

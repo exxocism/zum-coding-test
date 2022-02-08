@@ -26,13 +26,21 @@ const ReactComponent: string = (function () {
             font-size: 2.5rem;
             cursor: pointer;
           }
+
           .single__right {
             justify-self: right;
+          }
+
+          .single__link {
+            cursor: pointer;
+            font-size: inherit;
           }
         </style>
         <div class="single__article">
           <div>${this.getAttribute('articleid')}</div>
-          <div>${this.getAttribute('articlename')}</div>
+          <div>
+            <span class="single__link">${this.getAttribute('articlename')}</span>
+          </div>
           <div class=single__right>${this.getAttribute('username')}</div>
           <div class=single__right>${new Date(
             this.getAttribute('created-at')
