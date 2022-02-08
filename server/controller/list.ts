@@ -18,8 +18,9 @@ const list = (req: Request, res: Response) => {
         console.log('500 Internal Server Error - failed to get articles');
         return res.status(500).json({ code: 6, message: 'Failed to get articles' });
       }
-      cache.set(req.url, rows);
-      return res.status(200).json(rows);
+      const response: returnListArticle = { result: rows };
+      cache.set(req.url, response);
+      return res.status(200).json(response);
     });
     return;
   }
