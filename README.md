@@ -26,13 +26,27 @@ Deployment & development
 Screenshots
 --
 
-1. Loading 
+1. Loading
+  ![](https://github.com/exxocism/zum-coding-test/raw/main/result/01_Loading.gif)
+  
 2. Create
+  ![](https://github.com/exxocism/zum-coding-test/raw/main/result/02_Create.gif)
+
 3. Read
+  ![](https://github.com/exxocism/zum-coding-test/raw/main/result/03_Read.gif)
+
 4. Update
+  ![](https://github.com/exxocism/zum-coding-test/raw/main/result/04_Update.gif)
+
 5. Delete
+  ![](https://github.com/exxocism/zum-coding-test/raw/main/result/05_Delete.gif)
 
 6. Search Query
+  ![](https://github.com/exxocism/zum-coding-test/raw/main/result/06_SearchQuery.gif)
+
 7. Pagination
+  ![](https://github.com/exxocism/zum-coding-test/raw/main/result/07_Pagination.gif)
+  
 8. Ordering
+  ![](https://github.com/exxocism/zum-coding-test/raw/main/result/08_Ordering.gif)
   
