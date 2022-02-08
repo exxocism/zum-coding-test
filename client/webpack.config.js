@@ -3,12 +3,21 @@ const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
-  entry: './src/index.ts',
+  entry: './src/index.tsx',
   module: {
     rules: [
       {
         test: /\.tsx?$/,
-        use: 'ts-loader',
+        use: [
+          {
+            loader: 'babel-loader',
+            options: {
+              //presets: ['react'],
+              plugins: ['./syntax/jsx-babel-transpile', './syntax/jsx-syntax-parser'],
+            },
+          },
+          'ts-loader',
+        ],
         exclude: /node_modules/,
       },
       {
