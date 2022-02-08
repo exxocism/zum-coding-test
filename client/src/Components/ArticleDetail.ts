@@ -42,15 +42,44 @@ const ReactComponent: string = (function () {
       this.render(cache.result[article]);
     }
 
-    render(article: typeArticleDB) {
+    render({ articleid, username, articlename, articletext, created_at }: typeArticleDB) {
       this.innerHTML = `
         <style>
           .article__detail {
             padding: 3rem;
           }
+
+          .article__detail__title {
+            font-size: 3rem;
+            font-weight: bold;
+            margin-bottom: 1.5rem;
+          }
+          
+          .article__metadata {
+            display: grid;
+            grid-template-columns: 1fr 2fr 2fr 2fr;
+            margin-bottom: 1.5rem;
+          }
+
+          .article__metadata > div {
+            font-size: 2rem;
+            color: darkslategray;
+          }
+
+          .article__detail__text {
+            white-space: pre-wrap;
+            font-size: 1.8rem;
+          }
         </style>
-        <div class="article__detail">  
-          ${JSON.stringify(article)}
+        <div class="article__detail">
+          <!-- 여기서부터 조건부 렌더링 -->
+          <h1 class="article__detail__title">${articlename}</h1>
+          <div class="article__metadata">
+            <div>글번호: ${articleid}</div>
+            <div>작성자: ${username}</div>
+            <div>작성일: ${new Date(created_at).toLocaleDateString()}</div>
+          </div>
+          <div class="article__detail__text">${articletext}</div>
         </div>
       `;
     }
