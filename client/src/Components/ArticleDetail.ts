@@ -1,6 +1,14 @@
 import { returnListArticle, typeArticleDB, typeModifyArticle } from '@backend/Types';
 import { reRender } from '..';
 
+export const MAGICNUM = {
+  MAX_USERNAME_LENGTH: 32,
+  MAX_ARTICLENAME_LENGTH: 128,
+  MAX_ARTICLETEXT_LENGTH: 1048576,
+  MAX_ARTICLETEXT_QUERY_LENGTH: 128,
+  MAX_SAFE_QUERY_LENGTH: Math.floor(Math.sqrt(Number.MAX_SAFE_INTEGER)),
+};
+
 const ReactComponent: string = (function () {
   class ArticleDetail extends HTMLElement {
     constructor() {
@@ -30,7 +38,7 @@ const ReactComponent: string = (function () {
           return;
         }
 
-        if (data.status === 404) {
+        if (data.status === 404 || data.status === 400) {
           notfound();
           return;
         }
@@ -83,11 +91,11 @@ const ReactComponent: string = (function () {
                 alert('글번호는 정수만 입력해주세요.');
                 return;
               }
-              if (articlename.length > 128) {
-                alert('제목은 128자 이내로 입력해주세요.');
+              if (articlename.length > MAGICNUM.MAX_ARTICLENAME_LENGTH) {
+                alert(`제목은 ${MAGICNUM.MAX_ARTICLENAME_LENGTH}자 이내로 입력해주세요.`);
                 return;
               }
-              if (articletext.length > 1048576) {
+              if (articletext.length > MAGICNUM.MAX_ARTICLETEXT_LENGTH) {
                 alert('내용이 너무 깁니다.');
                 return;
               }

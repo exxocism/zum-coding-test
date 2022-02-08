@@ -1,4 +1,3 @@
-import { typeListArticle } from '@backend/Types';
 import { reRender } from '..';
 
 const ReactComponent: string = (function () {
@@ -136,6 +135,7 @@ const ReactComponent: string = (function () {
         const val = (event.target as HTMLSelectElement)?.value;
         if (!val) searchParams.delete('articlePerPage');
         else searchParams.set('articlePerPage', val);
+        searchParams.delete('currentPage');
         sessionStorage.removeItem('cache_list');
         const endpoint = `${window.location.origin}${
           window.location.pathname

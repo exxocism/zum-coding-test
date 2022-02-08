@@ -1,1 +1,1 @@
-const store = new Map();
+export const recoilState = new Map();

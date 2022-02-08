@@ -43,10 +43,10 @@ const newArticle = (req: Request, res: Response) => {
   const updated_at = new Date().toISOString();
 
   // write to database
-  db.all(
+  db.run(
     `INSERT INTO Article (username, articletext, articlename, created_at, modified_at) VALUES (?, ?, ?, ?, ?);`,
     [username, articletext, articlename, created_at, updated_at],
-    (err: Error) => {
+    function (err: Error) {
       if (err) {
         console.dir(err);
         console.log('500 Internal Server Error - failed to insert article');
@@ -55,8 +55,8 @@ const newArticle = (req: Request, res: Response) => {
 
       //clear cache
       cache.clear();
-      console.log('200 OK - article inserted');
-      return res.status(200).json({ id: db });
+      console.log('201 Created - article inserted');
+      return res.status(201).json({ id: (this as any).lastID });
     }
   );
 };

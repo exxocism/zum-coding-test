@@ -1,5 +1,3 @@
-import { arrayBuffer, text } from 'stream/consumers';
-
 export const VirtualDOM = new Map();
 
 export const getHash = (page: any) => {

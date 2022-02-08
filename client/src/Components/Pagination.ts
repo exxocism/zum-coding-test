@@ -32,7 +32,7 @@ const ReactComponent: string = (function () {
     render(maxnum: number) {
       const searchParams = new URLSearchParams(window.location.search);
       let divisor = Number(searchParams.get('articlePerPage'));
-      if (isNaN(divisor) || !divisor) divisor = 10;
+      if (isNaN(divisor) || !divisor) divisor = Number.MAX_SAFE_INTEGER;
       const pages = Math.ceil(maxnum / divisor);
       this.innerHTML = `
         <style>
@@ -49,6 +49,27 @@ const ReactComponent: string = (function () {
             cursor: pointer;
             margin: 0 1rem;
           }
+
+          .page__searchbutton {
+            margin-left: 1rem;
+            width: 8rem;
+            height: 3.5rem;
+            border-radius: 0.5rem;
+            font-size: 1.5rem;
+            border: 1px solid #777;
+            justify-self: center;
+          }
+
+          .page__searchbutton:active {
+            background-color: lightgray;
+          }
+
+          #page__writenew {
+            position: relative;
+            top: -3rem;
+            float: right;
+            margin-right: 3rem;
+          }
         </style>
         <div class="pagination"> 
           <div id="page_left" class="pagination__button">&lt;</div>
@@ -57,6 +78,7 @@ const ReactComponent: string = (function () {
           }).join('')}
           <div id="page_right" class="pagination__button">&gt;</div>
         </div>
+        <button id="page__writenew" class="page__searchbutton">글쓰기</button>
       `;
       document.querySelector('.pagination').addEventListener('click', (event: Event) => {
         const target = event.target as HTMLElement;
@@ -67,6 +89,10 @@ const ReactComponent: string = (function () {
         searchParams.set('currentPage', page);
         window.history.pushState({}, '', `${window.location.pathname}?${searchParams.toString()}`);
         sessionStorage.removeItem('cache_list');
+        reRender();
+      });
+      document.querySelector('#page__writenew').addEventListener('click', (event: Event) => {
+        window.history.pushState({}, '', `${window.location.pathname}?action=write`);
         reRender();
       });
     }
