@@ -36,8 +36,8 @@ const ReactComponent: string = (function () {
       this.innerHTML = `
         <style>
           .board {
-            padding: 3rem;
-            margin-top: 1rem;
+            padding: 0 3rem;
+            margin-top: 3rem;
             display: grid;
             grid-template-rows: auto;
             grid-gap: 1.2rem;
@@ -49,10 +49,10 @@ const ReactComponent: string = (function () {
         </style>
         <div class="board">  
           <div class="single__article">
-            <div class=board__bold>ID</div>
-            <div class=board__bold>Title</div>
-            <div class="board__bold single__right">Author</div>
-            <div class="board__bold single__right">Date</div>
+            <div class=board__bold>글번호</div>
+            <div class=board__bold>제목</div>
+            <div class="board__bold single__right">작성자</div>
+            <div class="board__bold single__right">작성일</div>
           </div>
           ${data.result
             .map(({ articleid, username, articlename, created_at }: typeArticleDB) => {
