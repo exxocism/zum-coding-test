@@ -1,5 +1,19 @@
 import { arrayBuffer, text } from 'stream/consumers';
 
+export const VirtualDOM = new Map();
+
+export const getHash = (page: any) => {
+  let hash = '';
+  for (const item of page) hash += item.localName;
+  return hash;
+};
+
+export const getHtml = (page: any) => {
+  let html = '';
+  for (const item of page) html += item.outerHTML;
+  return html;
+};
+
 const React = {
   createElement: (type: string, props: null, ...internalText: any) => {
     // console.dir(type);

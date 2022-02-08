@@ -1,5 +1,6 @@
 import { returnListArticle, typeArticleDB } from '@backend/Types';
 import SingleList from './SingleList';
+import { reRender } from '..';
 
 const ReactComponent: string = (function () {
   class ArticleList extends HTMLElement {
@@ -25,18 +26,16 @@ const ReactComponent: string = (function () {
         sessionStorage.setItem('cache_list', JSON.stringify(result));
         render(result);
       }
-      if (!sessionStorage.getItem('cache_list')) fetchArticles();
+      if (!sessionStorage.getItem('cache_list')) return fetchArticles();
       else {
         console.log('cache hit');
         this.render(JSON.parse(sessionStorage.getItem('cache_list')));
         document.querySelector('.board').addEventListener('click', (event: any) => {
           if (event.target.className === 'single__link') {
             const articleid: string = event.target.parentElement.previousElementSibling.textContent;
-            console.dir(articleid);
-            return;
-            const endpoint = window.location.host;
-            const url = `http://${endpoint}:3333/article/${articleid}`;
-            window.location.href = url;
+            const endpoint = `${window.location.origin}${window.location.pathname}?articleid=${articleid}`;
+            window.history.pushState({}, '', endpoint);
+            reRender();
             return;
           }
         });

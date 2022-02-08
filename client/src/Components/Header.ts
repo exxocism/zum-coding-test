@@ -1,3 +1,5 @@
+import { reRender } from '..';
+
 const ReactComponent: string = (function () {
   class Header extends HTMLElement {
     constructor() {
@@ -7,6 +9,11 @@ const ReactComponent: string = (function () {
 
     connectedCallback() {
       this.render();
+      document.querySelector('.headbar').addEventListener('click', (event: Event) => {
+        const endpoint = `${window.location.origin}${window.location.pathname}`;
+        window.history.pushState({}, '', endpoint);
+        reRender();
+      });
     }
 
     render() {
@@ -21,6 +28,7 @@ const ReactComponent: string = (function () {
             font-size: 2rem;
             font-weight: bold;
             color: white;
+            cursor: pointer;
           }
         </style>
         <div class="headbar">
