@@ -1,4 +1,5 @@
 import { returnListArticle, typeArticleDB, typeModifyArticle } from '@backend/Types';
+import Loading from './Loading';
 import { reRender } from '..';
 
 export const MAGICNUM = {
@@ -23,12 +24,14 @@ const ReactComponent: string = (function () {
       const addevent = this.addEvent;
       const render = this.render;
       const notfound = this.notfound;
+      let HTML = this;
       const searchParams = new URLSearchParams(window.location.search);
       const articleid = searchParams.get('articleid');
 
       const endpoint = window.location.hostname;
       async function fetchArticles() {
         let data, result: typeArticleDB;
+        HTML.innerHTML = `<${Loading}></${Loading}>`;
         try {
           data = await fetch(`http://${endpoint}:3333/article/${articleid}`);
           result = await data.json();
@@ -100,6 +103,7 @@ const ReactComponent: string = (function () {
                 return;
               }
 
+              event.target.innerHTML += `<${Loading}></${Loading}>`;
               fetch(`http://${window.location.hostname}:3333/article/${articleid}`, {
                 method: 'PUT',
                 headers: {
@@ -137,6 +141,7 @@ const ReactComponent: string = (function () {
           // 삭제
           case 'article-btn-delete':
             const articleid = searchParams.get('articleid');
+            event.target.innerHTML += `<${Loading}></${Loading}>`;
             fetch(`http://${window.location.hostname}:3333/article/${articleid}`, {
               method: 'DELETE',
             })

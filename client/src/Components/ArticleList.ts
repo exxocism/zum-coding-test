@@ -1,5 +1,6 @@
 import { returnListArticle, typeArticleDB } from '@backend/Types';
 import SingleList from './SingleList';
+import Loading from './Loading';
 import { reRender } from '..';
 
 const ReactComponent: string = (function () {
@@ -12,10 +13,12 @@ const ReactComponent: string = (function () {
     connectedCallback() {
       const endpoint = window.location.hostname;
       const render = this.render;
+      let HTML = this;
 
       async function fetchArticles() {
         let data, result: returnListArticle;
         const searchParams = new URLSearchParams(window.location.search);
+        HTML.innerHTML = `<${Loading}></${Loading}>`;
         try {
           data = await fetch(`http://${endpoint}:3333/article?${searchParams.toString()}`);
           result = await data.json();
